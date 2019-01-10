@@ -1,8 +1,8 @@
 // @flow
 
 export {
-  createOutputInterceptorController
+  createOutputInterceptor
 } from './factories';
 export type {
-  OutputInterceptorControllerType
+  OutputInterceptorType
 } from './types';

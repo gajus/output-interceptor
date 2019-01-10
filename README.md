@@ -12,19 +12,25 @@ Intercepts stdout/ stderr.
 
 ```js
 import {
-  createOutputIntercetorController
+  createOutputInterceptor
 } from 'output-interceptor';
 
-const outputInterceptorController = createOutputIntercetorController();
+const intercept = createOutputInterceptor();
 
-const flush = outputInterceptorController.intercept();
+const main = async () => {
+  const result = await intercept(() => {
+    console.log('foo');
+    console.error('bar');
 
-console.log('foo');
-console.error('bar')
+    return Promise.resolve('baz');
+  });
 
-const output = flush();
+  result === 'baz';
 
-output === 'foo\nbar\n';
+  intercept.output === 'foo\nbar\n';
+};
+
+main();
 
 ```
 
@@ -36,7 +42,7 @@ output === 'foo\nbar\n';
  * @property interceptStdout Default: true.
  * @property stripAnsi Default: true.
  */
-export type OutputInterceptorControllerUserConfigurationType = {|
+export type OutputInterceptorUserConfigurationType = {|
   +interceptStderr?: boolean,
   +interceptStdout?: boolean,
   +stripAnsi?: boolean
@@ -48,14 +54,13 @@ export type OutputInterceptorControllerUserConfigurationType = {|
 type FlushType = () => string;
 
 /**
- * @property clear Removes all interceptors.
- * @property intercept Creates output interceptor.
+ * @property output Output produced during the executing of the `routine`.
  */
-export type OutputInterceptorControllerType = {|
-  +clear: () => void,
-  +intercept: () => FlushType
+export type OutputInterceptorType = {|
+  <T>(routine: () => Promise<T> | T): Promise<T>,
+  output: ''
 |};
 
-createOutputInterceptorController(userConfiguration?: OutputInterceptorControllerUserConfigurationType): OutputInterceptorControllerType;
+createOutputInterceptor(userConfiguration?: OutputInterceptorUserConfigurationType): OutputInterceptorType;
 
 ```

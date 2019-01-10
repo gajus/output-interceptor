@@ -1,3 +1,3 @@
 // @flow
 
-export {default as createOutputInterceptorController} from './createOutputInterceptorController';
+export {default as createOutputInterceptor} from './createOutputInterceptor';
