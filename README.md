@@ -15,10 +15,10 @@ import {
   createOutputInterceptor
 } from 'output-interceptor';
 
-const intercept = createOutputInterceptor();
+const interceptOutput = createOutputInterceptor();
 
 const main = async () => {
-  const result = await intercept(() => {
+  const result = await interceptOutput(() => {
     console.log('foo');
     console.error('bar');
 
@@ -27,7 +27,7 @@ const main = async () => {
 
   result === 'baz';
 
-  intercept.output === 'foo\nbar\n';
+  interceptOutput.output === 'foo\nbar\n';
 };
 
 main();
