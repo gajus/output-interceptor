@@ -49,6 +49,10 @@ export default (userConfiguration?: OutputInterceptorUserConfigurationType): Out
   }
 
   const interceptor = async (routine) => {
+    if (process.domain) {
+      throw new Error('Cannot intercept output within an exiting domain context.');
+    }
+
     const domain: any = createDomain();
 
     domain.outputInterceptor = {
