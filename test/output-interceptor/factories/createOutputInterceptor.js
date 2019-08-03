@@ -135,3 +135,21 @@ test('distinguishes asynchronous execution domains', async (t) => {
   t.is(await run2, 'bar:1\nbar:2\nbar:3\n');
   t.is(await run3, 'baz:1\nbaz:2\nbaz:3\n');
 });
+
+test('captures output in case of an error', async (t) => {
+  const intercept = createOutputInterceptor({
+    interceptStderr: false,
+  });
+
+  // eslint-disable-next-line require-await
+  await t.throwsAsync(intercept(async () => {
+    console.log('foo');
+
+    throw new Error('test');
+  }));
+
+  const actual = intercept.output;
+  const expected = 'foo\n';
+
+  t.is(actual, expected);
+});

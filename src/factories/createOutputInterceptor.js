@@ -56,9 +56,16 @@ export default (userConfiguration?: OutputInterceptorUserConfigurationType): Out
       output: '',
     };
 
-    const result = await domain.run(() => {
-      return routine();
-    });
+    let routineResult;
+    let routineError;
+
+    try {
+      routineResult = await domain.run(() => {
+        return routine();
+      });
+    } catch (error) {
+      routineError = error;
+    }
 
     let output = domain.outputInterceptor.output;
 
@@ -70,7 +77,11 @@ export default (userConfiguration?: OutputInterceptorUserConfigurationType): Out
 
     interceptor.output = output;
 
-    return result;
+    if (routineError) {
+      throw routineError;
+    }
+
+    return routineResult;
   };
 
   interceptor.output = null;
