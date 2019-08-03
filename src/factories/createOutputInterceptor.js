@@ -4,7 +4,7 @@ import stripAnsi from 'strip-ansi';
 import type {
   OutputInterceptorConfigurationType,
   OutputInterceptorType,
-  OutputInterceptorUserConfigurationType
+  OutputInterceptorUserConfigurationType,
 } from '../types';
 
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
@@ -14,7 +14,7 @@ export default (userConfiguration?: OutputInterceptorUserConfigurationType): Out
   const configuration: OutputInterceptorConfigurationType = {
     interceptStderr: !(userConfiguration && userConfiguration.interceptStderr === false),
     interceptStdout: !(userConfiguration && userConfiguration.interceptStdout === false),
-    stripAnsi: !(userConfiguration && userConfiguration.stripAnsi === false)
+    stripAnsi: !(userConfiguration && userConfiguration.stripAnsi === false),
   };
 
   const interceptor = async (routine) => {

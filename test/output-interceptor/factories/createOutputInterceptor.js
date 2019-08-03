@@ -56,7 +56,7 @@ test('captures merged stream of stdout and stderr', async (t) => {
 
 test('captures only stderr output', async (t) => {
   const intercept = createOutputInterceptor({
-    interceptStdout: false
+    interceptStdout: false,
   });
 
   await intercept(() => {
@@ -72,7 +72,7 @@ test('captures only stderr output', async (t) => {
 
 test('captures only stdout output', async (t) => {
   const intercept = createOutputInterceptor({
-    interceptStderr: false
+    interceptStderr: false,
   });
 
   await intercept(() => {

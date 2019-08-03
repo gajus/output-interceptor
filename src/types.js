@@ -10,16 +10,16 @@
 export type OutputInterceptorUserConfigurationType = {|
   +interceptStderr?: boolean,
   +interceptStdout?: boolean,
-  +stripAnsi?: boolean
+  +stripAnsi?: boolean,
 |};
 
 export type OutputInterceptorConfigurationType = {|
   +interceptStderr: boolean,
   +interceptStdout: boolean,
-  +stripAnsi: boolean
+  +stripAnsi: boolean,
 |};
 
 export type OutputInterceptorType = {|
   <T>(routine: () => Promise<T> | T): Promise<T>,
-  output: string | null
+  output: string | null,
 |};
