@@ -9,6 +9,12 @@
 
 Intercepts stdout/ stderr.
 
+## Implementation
+
+This module uses [`domain`](https://nodejs.org/api/domain.html) to capture asyncrhonous function output.
+
+Read [Capturing stdout/ stderr in Node.js using Domain module](https://medium.com/@gajus/capturing-stdout-stderr-in-node-js-using-domain-module-3c86f5b1536d).
+
 ## Usage
 
 ```js
