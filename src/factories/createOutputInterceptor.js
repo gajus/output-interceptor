@@ -10,9 +10,6 @@ import type {
   OutputInterceptorUserConfigurationType,
 } from '../types';
 
-const originalStdoutWrite = process.stdout.write.bind(process.stdout);
-const originalStderrWrite = process.stderr.write.bind(process.stderr);
-
 export default (userConfiguration?: OutputInterceptorUserConfigurationType): OutputInterceptorType => {
   const outputInterceptorInstanceId = Symbol('OUTPUT_INTERCEPTOR');
 
@@ -21,6 +18,9 @@ export default (userConfiguration?: OutputInterceptorUserConfigurationType): Out
     interceptStdout: !(userConfiguration && userConfiguration.interceptStdout === false),
     stripAnsi: !(userConfiguration && userConfiguration.stripAnsi === false),
   };
+
+  const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+  const originalStderrWrite = process.stderr.write.bind(process.stderr);
 
   if (configuration.interceptStdout) {
     // $FlowFixMe

@@ -137,9 +137,7 @@ test('distinguishes asynchronous execution domains', async (t) => {
 });
 
 test('captures output in case of an error', async (t) => {
-  const intercept = createOutputInterceptor({
-    interceptStderr: false,
-  });
+  const intercept = createOutputInterceptor();
 
   // eslint-disable-next-line require-await
   await t.throwsAsync(intercept(async () => {
@@ -152,4 +150,19 @@ test('captures output in case of an error', async (t) => {
   const expected = 'foo\n';
 
   t.is(actual, expected);
+});
+
+test('works as expected when multiple interceptors are constructed simultaneously', async (t) => {
+  createOutputInterceptor();
+
+  const intercept = createOutputInterceptor();
+
+  createOutputInterceptor();
+
+  // eslint-disable-next-line require-await
+  await intercept(async () => {
+    console.log('foo');
+  });
+
+  t.is(intercept.output, 'foo\n');
 });
