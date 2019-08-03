@@ -3,5 +3,10 @@
     "canonical",
     "canonical/flowtype"
   ],
-  "root": true
+  "root": true,
+  "rules": {
+    "flowtype/no-flow-fix-me-comments": 0,
+    "flowtype/no-weak-types": 0,
+    "promise/prefer-await-to-callbacks": 0
+  }
 }

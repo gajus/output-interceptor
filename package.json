@@ -34,6 +34,7 @@
     "ava": "^2.2.0",
     "babel-plugin-istanbul": "^5.2.0",
     "coveralls": "^3.0.5",
+    "delay": "^4.3.0",
     "eslint": "^6.1.0",
     "eslint-config-canonical": "^17.3.3",
     "flow-bin": "^0.104.0",
