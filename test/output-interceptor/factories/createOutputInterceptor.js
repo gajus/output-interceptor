@@ -167,11 +167,13 @@ test('works as expected when multiple interceptors are constructed simultaneousl
   t.is(intercept.output, 'foo\n');
 });
 
-test('throws an error if an attempt is made to use output-interceptor within an existing domain', async (t) => {
+test('captures nested output-interceptor output', async (t) => {
   const intercept1 = createOutputInterceptor();
   const intercept2 = createOutputInterceptor();
 
-  const error = await t.throwsAsync(intercept1(async () => {
+  let output0;
+
+  await intercept1(async () => {
     console.log('foo');
 
     // eslint-disable-next-line require-await
@@ -179,8 +181,13 @@ test('throws an error if an attempt is made to use output-interceptor within an 
       console.log('bar');
     });
 
-    console.log('baz');
-  }));
+    output0 = intercept2.output;
 
-  t.is(error.message, 'Cannot intercept output within an exiting domain context.');
+    console.log('baz');
+  });
+
+  const output1 = intercept1.output;
+
+  t.is(output0, 'bar\n');
+  t.is(output1, 'foo\nbar\nbaz\n');
 });
