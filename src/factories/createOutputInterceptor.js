@@ -10,51 +10,46 @@ import type {
   OutputInterceptorUserConfigurationType,
 } from '../types';
 
-export default (userConfiguration?: OutputInterceptorUserConfigurationType): OutputInterceptorType => {
-  const outputInterceptorInstanceId = Symbol('OUTPUT_INTERCEPTOR');
+const originalStderrWrite = process.stderr.write.bind(process.stderr);
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 
-  const configuration: OutputInterceptorConfigurationType = {
-    interceptStderr: !(userConfiguration && userConfiguration.interceptStderr === false),
-    interceptStdout: !(userConfiguration && userConfiguration.interceptStdout === false),
-    stripAnsi: !(userConfiguration && userConfiguration.stripAnsi === false),
+export default (userConfiguration?: OutputInterceptorUserConfigurationType): OutputInterceptorType => {
+  // $FlowFixMe
+  process.stderr.write = (chunk, encoding, callback) => {
+    const domain: any = process.domain;
+
+    if (domain && domain.outputInterceptor && domain.outputInterceptor.interceptStderr) {
+      domain.outputInterceptor.output += chunk;
+    }
+
+    return originalStderrWrite(chunk, encoding, callback);
   };
 
-  const originalStdoutWrite = process.stdout.write.bind(process.stdout);
-  const originalStderrWrite = process.stderr.write.bind(process.stderr);
+  // $FlowFixMe
+  process.stdout.write = (chunk, encoding, callback) => {
+    const domain: any = process.domain;
 
-  if (configuration.interceptStdout) {
-    // $FlowFixMe
-    process.stdout.write = (chunk, encoding, callback) => {
-      const domain: any = process.domain;
+    if (domain && domain.outputInterceptor && domain.outputInterceptor.interceptStdout) {
+      domain.outputInterceptor.output += chunk;
+    }
 
-      if (domain && domain.outputInterceptor && domain.outputInterceptor.instanceId === outputInterceptorInstanceId) {
-        domain.outputInterceptor.output += chunk;
-      }
-
-      return originalStdoutWrite(chunk, encoding, callback);
-    };
-  }
-
-  if (configuration.interceptStderr) {
-    // $FlowFixMe
-    process.stderr.write = (chunk, encoding, callback) => {
-      const domain: any = process.domain;
-
-      if (domain && domain.outputInterceptor && domain.outputInterceptor.instanceId === outputInterceptorInstanceId) {
-        domain.outputInterceptor.output += chunk;
-      }
-
-      return originalStderrWrite(chunk, encoding, callback);
-    };
-  }
+    return originalStdoutWrite(chunk, encoding, callback);
+  };
 
   const interceptor = async (routine) => {
+    const configuration: OutputInterceptorConfigurationType = {
+      interceptStderr: !(userConfiguration && userConfiguration.interceptStderr === false),
+      interceptStdout: !(userConfiguration && userConfiguration.interceptStdout === false),
+      stripAnsi: !(userConfiguration && userConfiguration.stripAnsi === false),
+    };
+
     const parentDomain: any = process.domain;
 
-    const domain: any = createDomain();
+    const executionDomain: any = createDomain();
 
-    domain.outputInterceptor = {
-      instanceId: outputInterceptorInstanceId,
+    executionDomain.outputInterceptor = {
+      interceptStderr: configuration.interceptStderr,
+      interceptStdout: configuration.interceptStdout,
       output: '',
     };
 
@@ -62,16 +57,16 @@ export default (userConfiguration?: OutputInterceptorUserConfigurationType): Out
     let routineError;
 
     try {
-      routineResult = await domain.run(() => {
+      routineResult = await executionDomain.run(() => {
         return routine();
       });
     } catch (error) {
       routineError = error;
     }
 
-    let output = domain.outputInterceptor.output;
+    let output = executionDomain.outputInterceptor.output;
 
-    domain.outputInterceptor = undefined;
+    executionDomain.outputInterceptor = undefined;
 
     if (configuration && configuration.stripAnsi) {
       output = stripAnsi(output);
