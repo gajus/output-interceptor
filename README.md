@@ -41,6 +41,27 @@ main();
 
 ```
 
+### Singleton or dependency injection pattern
+
+It is recommended that you only create one instance of output-interceptor per entire project, e.g.
+
+Create `./routines.js` file with contents:
+
+```js
+import {
+  createOutputInterceptor
+} from 'output-interceptor';
+
+export const interceptOutput = createOutputInterceptor();
+
+```
+
+Then just import the `{interceptOutput}` routine from elsewhere in your codebase.
+
+Alternatively, create an instance of output-interceptor at the top of the program and pass it down using dependency injection.
+
+The benefit of this approach is that you do not create unnecessary wrappers around `process.stderr.write` and `process.stdout.write`.
+
 ## API
 
 ```js
